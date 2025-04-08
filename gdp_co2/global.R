@@ -2,6 +2,12 @@ library(dplyr)
 library(ggplot2)
 library(tidyverse)
 library(countrycode)
+library(shiny)
+library(shinydashboard)
+library(ggiraph)
+library(patchwork)
+library(hrbrthemes) # for the `theme_ipsum()`
+library(bslib)
 
 # import data
 df <- read.csv("../data.csv")
