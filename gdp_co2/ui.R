@@ -6,7 +6,11 @@ dashboardPage(
       tabName = "dashboard",
       icon = icon("dashboard")
     ),
-    menuItem("Charts", tabName = "charts", icon = icon("bar-chart-o")),
+    menuItem(
+      "Charts",
+      tabName = "charts",
+      icon = icon("chart-simple")
+    ),
     menuItem("Tables", tabName = "tables", icon = icon("th"))
   )),
   dashboardBody(tabItems(
@@ -20,7 +24,7 @@ dashboardPage(
           pickerInput(
             inputId = "picker",
             label = "Variable",
-            choices = names(df),
+            choices = sort(names(df[,!(names(df) %in% drops)])),
             options = pickerOptions(container = "body", liveSearch = TRUE),
             width = "100%",
             selected = "gdp_per_co2"
@@ -71,7 +75,7 @@ dashboardPage(
             pickerInput(
               inputId = "picker2",
               label = "Growth Filter Variable",
-              choices = names(df),
+              choices = sort(names(df[,!(names(df) %in% drops)])),
               options = pickerOptions(container = "body", liveSearch = TRUE),
               width = "100%",
               selected = "gdp_per_co2"
@@ -89,12 +93,116 @@ dashboardPage(
           )
           
         ),
-        girafeOutput('girafe_output_line', width = "100%")
+        girafeOutput('girafe_output_line', width = "100%", height = "90%")
       ),
       
       tabPanel(
         "Bubble Plot",
-        girafeOutput('girafe_output_bubble', width = "100%", height = "100%")
+        box(
+          pickerInput(
+            inputId = "picker_x",
+            label = "X - Variable",
+            choices = names(df),
+            options = pickerOptions(container = "body", liveSearch = TRUE),
+            width = "100%",
+            selected = "co2_growth"
+          ),
+          pickerInput(
+            inputId = "picker_y",
+            label = "Y - Variable",
+            choices = names(df),
+            options = pickerOptions(container = "body", liveSearch = TRUE),
+            width = "100%",
+            selected = "gdp_growth"
+          ),
+          pickerInput(
+            inputId = "picker_bar",
+            label = "Bar - Variable",
+            choices = names(df),
+            options = pickerOptions(container = "body", liveSearch = TRUE),
+            width = "100%",
+            selected = "gdp_per_co2"
+          ),
+          col_widths = c(12, 12), collapsible = TRUE, title = "Variable Selection"
+        ),
+        
+        box(
+          # layout_columns(
+          # switchInput(
+          #   inputId = "year_switch_bubble",
+          #   label = "By Year",
+          #   labelWidth = "80px"
+          # ),
+          # sliderInput(
+          #   "year_slider_bubble",
+          #   "Year",
+          #   min = min(df$Year),
+          #   max = max(df$Year),
+          #   value = min(df$Year),
+          #   step = 1,
+          #   sep = "",
+          #   animate = TRUE
+          # )
+          # 
+          # ),
+          # layout_columns(
+          #   switchInput(
+          #     inputId = "axes_switch",
+          #     label = "Lock Axes",
+          #     labelWidth = "80px"
+          #   ),
+          # numericRangeInput(
+          #   "x_axis",
+          #   "X Axis",
+          #   c(-100,100),
+          #   separator = " to "
+          # ),
+          # numericRangeInput(
+          #   "y_axis",
+          #   "Y Axis",
+          #   c(-100,100),
+          #   separator = " to "
+          # )),
+
+          
+          layout_columns(
+            prettyCheckboxGroup(
+              inputId = "check_bubble",
+              label = "Growth Filter",
+              choices = list("Fastest" = 0, "Slowest" = 1)
+            ),
+            numericInput("num_bubble", label = "Number for Filter", value = 5)
+          ),
+          
+          collapsible = TRUE, title = "Plot Options"
+        ),
+            box(
+              dropdownButton(
+                
+                tags$h3("List of Inputs"),
+                
+                selectInput(inputId = 'color',
+                            label = 'Color',
+                            choices = names(df),
+                            selected = 'continent'
+                            ),
+                
+                selectInput(inputId = 'size',
+                            label = 'Size',
+                            choices = names(df),
+                            selected = "Density.n.P.Km2."),
+                
+                circle = TRUE,
+                icon = icon("gear"),
+                
+                tooltip = tooltipOptions(title = "Click for more inputs")
+              ),
+              
+              
+              girafeOutput('girafe_output_bubble', width = "100%", height = "100%"), width = 12),
+        
+        box(
+        plotlyOutput("scatter_plot", width = "100%", height = "100%"), width = 12)
       )
     ), ),
     tabItem(tabName = "tables", tabsetPanel(

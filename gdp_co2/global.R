@@ -8,6 +8,9 @@ library(ggiraph)
 library(patchwork)
 library(hrbrthemes) # for the `theme_ipsum()`
 library(bslib)
+library(shinyWidgets)
+library(gganimate)
+library(plotly)
 
 # import data
 df <- read.csv("../data.csv")
@@ -29,7 +32,7 @@ df <- df %>%
            (df$Density.n.P.Km2. * df$Land.Area.Km2.))
 
 df <- df %>%
-  mutate("gdp_per_co2" = df$gdp_per_capita / df$co2_per_cap)
+  mutate("gdp_per_co2" = df$gdp_per_capita / (df$co2_per_cap * 1000))
 
 
 co2_pct_change_df <- df %>% select(Entity,Year,Value_co2_emissions_kt_by_country) %>% drop_na() %>%
@@ -37,3 +40,8 @@ co2_pct_change_df <- df %>% select(Entity,Year,Value_co2_emissions_kt_by_country
   select(Entity, Year, co2_growth)
 
 df <- merge(df, co2_pct_change_df, by=c("Entity", "Year"))
+
+
+drops <- c("Entity","Year","Density.n.P.Km2.",
+           "Land.Area.Km2.","Latitude","Longitude",
+           "continent","region")
