@@ -49,10 +49,10 @@ function(input, output, session) {
       country_list <- c(country_list_1, country_list_2)
       
       
-      df <- df %>% filter(Entity %in% country_list |
+      data <- df %>% filter(Entity %in% country_list |
                             Entity %in% input$vselect)
       
-      data <- df
+   
       plot <- data %>%
         ggplot(mapping = aes(
           x = Year,
@@ -67,6 +67,10 @@ function(input, output, session) {
     plot <- plot + geom_line_interactive(hover_nearest = TRUE) + theme_ipsum() + labs(color = str_to_title(input$radio), y =
                                                                                         input$picker) +
       theme(axis.title.x = element_text(size = 15), aspect.ratio = 3/4)
+    
+    if (nrow(data %>% select(Entity) %>% unique()) > 10){
+      plot <- plot + theme(legend.position="none")
+    }
     
     
     interactive_plot <- girafe(ggobj = plot)
