@@ -27,30 +27,31 @@ function(input, output, session) {
     }
     
     
-    if (input$radio == "Entity") {
-      models <- df %>% select(Entity, Year, input$picker2) %>% drop_na() %>%
-        group_by(Entity) %>%
+    if (input$radio == "Country") {
+      models <- df %>% select(Country, Year, input$picker2) %>% drop_na() %>%
+        group_by(Country) %>%
         do(model = lm(get(input$picker2) ~ Year, data = .)) %>%
-        summarise(Entity = Entity, slope = coef(model)[2]) %>% arrange(desc(slope))
+        summarise(Country = Country, slope = coef(model)[2]) %>% arrange(desc(slope))
       
       country_list <- c("")
       country_list_1 <- c("")
       country_list_2 <- c("")
       
       if (isTRUE(input$check == 0)) {
-        country_list_1 <- head(models, input$num)$Entity
+        country_list_1 <- head(models, input$num)$Country
       } else if (isTRUE(input$check == 1)) {
-        country_list_2 <- tail(models, input$num)$Entity
+        country_list_2 <- tail(models, input$num)$Country
       } else if (sum(as.numeric(input$check)) == 1) {
-        country_list_1 <- head(models, input$num)$Entity
-        country_list_2 <- tail(models, input$num)$Entity
+        country_list_1 <- head(models, input$num)$Country
+        country_list_2 <- tail(models, input$num)$Country
       }
       
       country_list <- c(country_list_1, country_list_2)
       
       
-      data <- df %>% filter(Entity %in% country_list |
-                            Entity %in% input$vselect)
+      data <- df %>% filter(Country %in% country_list |
+                            Country %in% input$vselect |
+                              Country %in% input$vselect1)
       
    
       plot <- data %>%
@@ -68,7 +69,7 @@ function(input, output, session) {
                                                                                         input$picker) +
       theme(axis.title.x = element_text(size = 15), aspect.ratio = 3/4)
     
-    if (nrow(data %>% select(Entity) %>% unique()) > 10){
+    if (nrow(data %>% select(Country) %>% unique()) > 10){
       plot <- plot + theme(legend.position="none")
     }
     
@@ -93,10 +94,10 @@ function(input, output, session) {
   output$girafe_output_bubble <- renderGirafe({
     
     
-    models <- df %>% select(Entity, Year, input$picker_bar) %>% drop_na() %>%
-      group_by(Entity) %>%
+    models <- df %>% select(Country, Year, input$picker_bar) %>% drop_na() %>%
+      group_by(Country) %>%
       do(model = lm(get(input$picker_bar) ~ Year, data = .)) %>%
-      summarise(Entity = Entity, slope = coef(model)[2]) %>% arrange(desc(slope))
+      summarise(Country = Country, slope = coef(model)[2]) %>% arrange(desc(slope))
 
     country_list <- c("")
     country_list_1 <- c("")
@@ -104,31 +105,33 @@ function(input, output, session) {
 
 
     if (isTRUE(input$check_bubble == 0)) {
-      country_list_1 <- head(models, input$num_bubble)$Entity
+      country_list_1 <- head(models, input$num_bubble)$Country
     } else if (isTRUE(input$check_bubble == 1)) {
-      country_list_2 <- tail(models, input$num_bubble)$Entity
+      country_list_2 <- tail(models, input$num_bubble)$Country
     } else if (sum(as.numeric(input$check_bubble)) == 1) {
-      country_list_1 <- head(models, input$num_bubble)$Entity
-      country_list_2 <- tail(models, input$num_bubble)$Entity
+      country_list_1 <- head(models, input$num_bubble)$Country
+      country_list_2 <- tail(models, input$num_bubble)$Country
     }
 
     country_list <- c(country_list_1, country_list_2)
     
   
-    df <- df %>% group_by(Entity,continent,region) %>% summarize(across(everything(),mean, na.rm=TRUE))
+    df <- df %>% group_by(Country,continent,region) %>% summarize(across(everything(),mean, na.rm=TRUE))
 
 
     if (isTRUE(is.null(input$check_bubble))){
       plot_df <- df
-    } else (plot_df <- df %>% filter(Entity %in% country_list))
+    } else (plot_df <- df %>% filter(Country %in% country_list))
     
     
-    p1 <- ggplot(plot_df, aes(get(input$picker_x), get(input$picker_y), tooltip = paste("Country:", Entity,"<br>GDP per CO2:", gdp_per_co2
-    ), data_id = Entity, size = get(input$size), fill = get(input$color))) +
+    p1 <- ggplot(plot_df, aes(get(input$picker_x), get(input$picker_y), tooltip = paste("Country:", Country,"<br>",input$picker_bar,":", get(input$picker_bar)
+    ), data_id = Country, size = get(input$size), fill = get(input$color))) +
       geom_point_interactive(alpha = 0.5, shape = 21, color = "black") + 
-      theme(legend.position = "none", aspect.ratio = 3/4) + xlab(input$picker_x) + ylab(input$picker_y)
+      theme(legend.position = "none", aspect.ratio = 3/4) + xlab(input$picker_x) + ylab(input$picker_y) + geom_hline(yintercept=0)+ geom_vline(xintercept=0)
       
-    
+    if (input$logx){
+      p1 <- p1 + scale_x_continuous(trans='log10')
+    }
     
     # if (input$axes_switch){
     #   p1 <- p1 + xlim(input$x_axis[1],input$x_axis[2]) +
@@ -138,10 +141,10 @@ function(input, output, session) {
     
     
     
-    temp_df <- head(df %>% arrange(desc(get(input$picker_bar))),15)
-    p2 <- ggplot(temp_df, aes(x = reorder(temp_df$Entity, get(input$picker_bar)), y = get(input$picker_bar), 
-                              tooltip = paste("Country:", temp_df$Entity,"<br>GDP per CO2:", get(input$picker_bar)), data_id = temp_df$Entity,
-                              fill = temp_df$continent)) +
+    temp_df <- head(plot_df %>% arrange(desc(get(input$picker_bar))),15)
+    p2 <- ggplot(temp_df, aes(x = reorder(temp_df$Country, get(input$picker_bar)), y = get(input$picker_bar), 
+                              tooltip = paste("Country:", temp_df$Country,"<br>",input$picker_bar,":", get(input$picker_bar)), data_id = temp_df$Country,
+                              fill = get(input$color))) +
       geom_col_interactive() + coord_flip() + 
       scale_x_discrete(
         labels = function(x) str_wrap(x, width = 20),
@@ -157,10 +160,10 @@ function(input, output, session) {
   
   
   output$scatter_plot <- renderPlotly({
-    models <- df %>% select(Entity, Year, input$picker_bar) %>% drop_na() %>%
-      group_by(Entity) %>%
+    models <- df %>% select(Country, Year, input$picker_bar) %>% drop_na() %>%
+      group_by(Country) %>%
       do(model = lm(get(input$picker_bar) ~ Year, data = .)) %>%
-      summarise(Entity = Entity, slope = coef(model)[2]) %>% arrange(desc(slope))
+      summarise(Country = Country, slope = coef(model)[2]) %>% arrange(desc(slope))
 
     country_list <- c("")
     country_list_1 <- c("")
@@ -168,30 +171,34 @@ function(input, output, session) {
 
 
     if (isTRUE(input$check_bubble == 0)) {
-      country_list_1 <- head(models, input$num_bubble)$Entity
+      country_list_1 <- head(models, input$num_bubble)$Country
     } else if (isTRUE(input$check_bubble == 1)) {
-      country_list_2 <- tail(models, input$num_bubble)$Entity
+      country_list_2 <- tail(models, input$num_bubble)$Country
     } else if (sum(as.numeric(input$check_bubble)) == 1) {
-      country_list_1 <- head(models, input$num_bubble)$Entity
-      country_list_2 <- tail(models, input$num_bubble)$Entity
+      country_list_1 <- head(models, input$num_bubble)$Country
+      country_list_2 <- tail(models, input$num_bubble)$Country
     }
 
     country_list <- c(country_list_1, country_list_2)
     
     if (isTRUE(is.null(input$check_bubble))){
       plot_df <- df
-      color_var = plot_df$continent
+      # color_var = get(input$color)
     } else {
-      plot_df <- df %>% filter(Entity %in% country_list);
-      color_var = plot_df$Entity
+      plot_df <- df %>% filter(Country %in% country_list);
+      # color_var = plot_df$Country
     }
     
-    p <- ggplot(plot_df, aes(get(input$picker_x), get(input$picker_y), color = color_var)) +
-      geom_point(aes(size = get(input$size), frame = Year, ids = Entity)) + 
-      xlab(input$picker_x) + ylab(input$picker_y)
+    p <- ggplot(plot_df, aes(get(input$picker_x), get(input$picker_y), color = get(input$color))) +
+      geom_point(aes(size = get(input$size), frame = Year, ids = Country)) + 
+      xlab(input$picker_x) + ylab(input$picker_y) + labs(color="",size="")
+    
+    if (input$logx){
+      p <- p + scale_x_continuous(trans='log10')
+    }
 
     fig <- ggplotly(p) %>%
-      animation_opts(frame = 2000
+      animation_opts(frame = 2000, transition = 1500
       )
 
   })
@@ -216,13 +223,16 @@ function(input, output, session) {
   output$table <- DT::renderDataTable(DT::datatable({
     data <- df[, input$show_vars, drop = FALSE]
     if (input$ent != "All") {
-      data <- data[data$Entity == input$ent, ]
+      data <- data[data$Country == input$ent, ]
     }
     if (input$continent != "All") {
       data <- data[data$continent == input$continent, ]
     }
     if (input$region != "All") {
       data <- data[data$region == input$region, ]
+    }
+    if (input$summarize) {
+      data <- data %>% group_by(Country) %>% summarize(across(everything(),mean, na.rm=TRUE))
     }
     data
   }, options = list(paging = FALSE)))

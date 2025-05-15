@@ -20,80 +20,95 @@ dashboardPage(
       tabPanel(
         "Line Chart",
         
-        layout_columns(
+        box(
           pickerInput(
-            inputId = "picker",
-            label = "Variable",
-            choices = sort(names(df[,!(names(df) %in% drops)])),
-            options = pickerOptions(container = "body", liveSearch = TRUE),
-            width = "100%",
-            selected = "gdp_per_co2"
-          ),
-          radioGroupButtons(
-            inputId = "radio",
-            label = "Group Filter",
-            choices = list(
-              "Global" = 1,
-              "Continental" = "continent",
-              "Regional" = "region",
-              "Country" = "Entity"
-            ),
-            direction = "vertical"
-          ),
-          
-          
-          layout_columns(
-            virtualSelectInput(
-              inputId = "vselect",
-              label = "Country choices :",
-              choices = list(
-                Africa = unlist(
-                  df %>% filter(continent == "Africa") %>% select(Entity) %>% unique(),
-                  use.names = FALSE
-                ),
-                Americas = unlist(
-                  df %>% filter(continent == "Americas") %>% select(Entity) %>% unique(),
-                  use.names = FALSE
-                ),
-                Asia = unlist(
-                  df %>% filter(continent == "Asia") %>% select(Entity) %>% unique(),
-                  use.names = FALSE
-                ),
-                Europe = unlist(
-                  df %>% filter(continent == "Europe") %>% select(Entity) %>% unique(),
-                  use.names = FALSE
-                ),
-                Oceania = unlist(
-                  df %>% filter(continent == "Oceania") %>% select(Entity) %>% unique(),
-                  use.names = FALSE
-                )
-              ),
-              multiple = TRUE,
-              width = "100%",
-              dropboxWrapper = "body"
-            ),
-            pickerInput(
-              inputId = "picker2",
-              label = "Growth Filter Variable",
-              choices = sort(names(df[,!(names(df) %in% drops)])),
-              options = pickerOptions(container = "body", liveSearch = TRUE),
-              width = "100%",
-              selected = "gdp_per_co2"
-            ),
-            layout_columns(
-              prettyCheckboxGroup(
-                inputId = "check",
-                label = "Growth Filter",
-                choices = list("Fastest" = 0, "Slowest" = 1),
-                selected = 0
-              ),
-              numericInput("num", label = "Number for Filter", value = 5)
-            ),
-            col_widths = c(1, 1)
-          )
-          
+          inputId = "picker",
+          label = "Variable",
+          choices = sort(names(df[,!(names(df) %in% drops)])),
+          options = pickerOptions(container = "body", liveSearch = TRUE),
+          width = "100%",
+          selected = "GDP per CO2"
         ),
-        girafeOutput('girafe_output_line', width = "100%", height = "90%")
+        radioGroupButtons(
+          inputId = "radio",
+          label = "Group Filter",
+          choices = list(
+            "Global" = 1,
+            "Continental" = "continent",
+            "Regional" = "region",
+            "Country" = "Country"
+          )
+          ), collapsible = TRUE, width = 4
+        ),
+        
+        box(
+          layout_columns(
+            layout_columns(
+          virtualSelectInput(
+          inputId = "vselect",
+          label = "Country choices :",
+          choices = list(
+            Africa = unlist(
+              df %>% filter(continent == "Africa") %>% select(Country) %>% unique(),
+              use.names = FALSE
+            ),
+            Americas = unlist(
+              df %>% filter(continent == "Americas") %>% select(Country) %>% unique(),
+              use.names = FALSE
+            ),
+            Asia = unlist(
+              df %>% filter(continent == "Asia") %>% select(Country) %>% unique(),
+              use.names = FALSE
+            ),
+            Europe = unlist(
+              df %>% filter(continent == "Europe") %>% select(Country) %>% unique(),
+              use.names = FALSE
+            ),
+            Oceania = unlist(
+              df %>% filter(continent == "Oceania") %>% select(Country) %>% unique(),
+              use.names = FALSE
+            )
+          ),
+          multiple = TRUE,
+          width = "100%",
+          dropboxWrapper = "body"),
+          
+          virtualSelectInput(
+            inputId = "vselect1",
+            label = "Country Search", 
+            choices = df %>% select(Country) %>% unique(),
+            search = TRUE,
+            markSearchResults = TRUE, 
+            width = "100%",
+            dropboxWrapper = "body",
+            hideClearButton = FALSE,
+            multiple = TRUE,
+            disableOptionGroupCheckbox = TRUE,
+            disableSelectAll = TRUE
+          
+        ),col_widths = c(12,12)),
+        layout_columns(
+        pickerInput(
+          inputId = "picker2",
+          label = "Growth Filter Variable",
+          choices = sort(names(df[,!(names(df) %in% drops)])),
+          options = pickerOptions(container = "body", liveSearch = TRUE),
+          width = "100%",
+          selected = "GDP per CO2"
+        ),
+        layout_columns(
+        prettyCheckboxGroup(
+          inputId = "check",
+          label = "Growth Filter",
+          choices = list("Fastest" = 0, "Slowest" = 1),
+          selected = 0
+        ),
+        numericInput("num", label = "Number for Filter", value = 5)), col_widths = c(4,2,2))),
+        
+        collapsible = TRUE, width = 8),
+
+        box(
+        girafeOutput('girafe_output_line', width = "100%", height = "90%"),width = 12)
       ),
       
       tabPanel(
@@ -102,26 +117,26 @@ dashboardPage(
           pickerInput(
             inputId = "picker_x",
             label = "X - Variable",
-            choices = names(df),
+            choices = sort(names(df[,!(names(df) %in% drops)])),
             options = pickerOptions(container = "body", liveSearch = TRUE),
             width = "100%",
-            selected = "co2_growth"
+            selected = "CO2 Growth"
           ),
           pickerInput(
             inputId = "picker_y",
             label = "Y - Variable",
-            choices = names(df),
+            choices = sort(names(df[,!(names(df) %in% drops)])),
             options = pickerOptions(container = "body", liveSearch = TRUE),
             width = "100%",
-            selected = "gdp_growth"
+            selected = "GDP Growth"
           ),
           pickerInput(
             inputId = "picker_bar",
             label = "Bar - Variable",
-            choices = names(df),
+            choices = sort(names(df[,!(names(df) %in% drops)])),
             options = pickerOptions(container = "body", liveSearch = TRUE),
             width = "100%",
-            selected = "gdp_per_co2"
+            selected = "GDP per CO2"
           ),
           col_widths = c(12, 12), collapsible = TRUE, title = "Variable Selection"
         ),
@@ -171,38 +186,53 @@ dashboardPage(
               label = "Growth Filter",
               choices = list("Fastest" = 0, "Slowest" = 1)
             ),
-            numericInput("num_bubble", label = "Number for Filter", value = 5)
+            numericInput("num_bubble", label = "Number for Filter", value = 5),
+            selectInput(inputId = 'color',
+                        label = 'Color',
+                        choices = drops,
+                        selected = 'continent'
+            ),
+            selectInput(inputId = 'size',
+                        label = 'Size',
+                        choices = names(df %>% select(-c(Country,Year))),
+                        selected = "Density (P/Km2)"),
+          col_widths = c(1,1,1)),
+          
+          checkboxInput(
+            inputId = "logx",
+            label = "Log Scale X-Axis", 
+            value = FALSE
           ),
           
           collapsible = TRUE, title = "Plot Options"
         ),
             box(
-              dropdownButton(
-                
-                tags$h3("List of Inputs"),
-                
-                selectInput(inputId = 'color',
-                            label = 'Color',
-                            choices = names(df),
-                            selected = 'continent'
-                            ),
-                
-                selectInput(inputId = 'size',
-                            label = 'Size',
-                            choices = names(df),
-                            selected = "Density.n.P.Km2."),
-                
-                circle = TRUE,
-                icon = icon("gear"),
-                
-                tooltip = tooltipOptions(title = "Click for more inputs")
-              ),
+              # dropdownButton(
+              #   
+              #   tags$h3("List of Inputs"),
+              #   
+              #   selectInput(inputId = 'color',
+              #               label = 'Color',
+              #               choices = names(df),
+              #               selected = 'continent'
+              #               ),
+              #   
+              #   selectInput(inputId = 'size',
+              #               label = 'Size',
+              #               choices = names(df),
+              #               selected = "Density (P/Km2)"),
+              #   
+              #   circle = TRUE,
+              #   icon = icon("gear"),
+              #   
+              #   tooltip = tooltipOptions(title = "Click for more inputs")
+              # ),
               
               
-              girafeOutput('girafe_output_bubble', width = "100%", height = "100%"), width = 12),
+              girafeOutput('girafe_output_bubble', width = "100%", height = "auto"), width = 12),
         
         box(
-        plotlyOutput("scatter_plot", width = "100%", height = "100%"), width = 12)
+        plotlyOutput("scatter_plot", width = "100%", height = "600px"), width = 12)
       )
     ), ),
     tabItem(tabName = "tables", tabsetPanel(
@@ -216,10 +246,15 @@ dashboardPage(
           inline = TRUE
         ),
         checkboxInput('bar', 'All/None'),
+        switchInput(
+          inputId = "summarize",
+          label = "Summarize", 
+          labelWidth = "80px"
+        ),
         
         fluidRow(
-          column(4, selectInput("ent", "Entity:", c(
-            "All", unique(as.character(df$Entity))
+          column(4, selectInput("ent", "Country:", c(
+            "All", unique(as.character(df$Country))
           ))),
           column(4, selectInput(
             "continent", "continent:", c("All", unique(as.character(df$continent)))
@@ -231,7 +266,7 @@ dashboardPage(
         # Create a new row for the table.
         div(style = 'overflow-x: scroll', DT::dataTableOutput("table"))
       ),
-      tabPanel("TEST")
+
     ))
   ), )
 )
