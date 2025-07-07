@@ -15,7 +15,53 @@ dashboardPage(
   )),
   dashboardBody(tabItems(
     #First tab content
-    tabItem(tabName = "dashboard", h2("TEMP DASHBOARD")),
+    tabItem(tabName = "dashboard", 
+            fluidRow(
+              box(
+                title = "🌍 Project Overview", 
+                width = 12, 
+                status = "primary", 
+                solidHeader = TRUE,
+                h4("Reducing Emissions Without Sacrificing Growth")
+              )
+            ),
+            
+            fluidRow(
+              box(
+                title = "🎯 Project Goal", 
+                width = 12, 
+                status = "success", 
+                solidHeader = TRUE,
+                p("Develop a data-driven methodology to identify which countries are achieving the greatest impact on Greenhouse Gas (GHG) reduction while maintaining high levels of economic output."),
+                p("Additionally, the project aims to forecast the next potential leader in GHG-efficient economic performance based on current trends.")
+              )
+            ),
+            
+            fluidRow(
+              box(
+                title = "📊 Project Summary", 
+                width = 12, 
+                status = "info", 
+                solidHeader = TRUE,
+                p("A common criticism of climate policy is the perceived trade-off between environmental responsibility and economic productivity."),
+                p("This analysis challenges that assumption by identifying nations that successfully reduce emissions without compromising growth."),
+                p("By highlighting these top-performing countries, the project provides evidence-based examples for how climate progress and prosperity can go hand-in-hand — offering a benchmark for future global policy.")
+              )
+            )
+            
+            
+            
+            
+            
+            
+            ),
+    
+    
+    
+    
+    
+    
+    
     tabItem(tabName = "charts", tabsetPanel(
       tabPanel(
         "Line Chart",
