@@ -130,7 +130,7 @@ function(input, output, session) {
       theme(legend.position = "none", aspect.ratio = 3/4) + xlab(input$picker_x) + ylab(input$picker_y) + geom_hline(yintercept=0)+ geom_vline(xintercept=0)
       
     if (input$logx){
-      p1 <- p1 + scale_x_continuous(trans='log10')
+      p1 <- p1 + scale_x_continuous(trans='log')
     }
     
     # if (input$axes_switch){
@@ -140,8 +140,16 @@ function(input, output, session) {
     # }
     
     
-    
     temp_df <- head(plot_df %>% arrange(desc(get(input$picker_bar))),15)
+    
+    
+    if (input$invert) {
+      temp_df <- head(plot_df %>% arrange(get(input$picker_bar)),15)
+    }
+    
+    
+    
+    
     p2 <- ggplot(temp_df, aes(x = reorder(temp_df$Country, get(input$picker_bar)), y = get(input$picker_bar), 
                               tooltip = paste("Country:", temp_df$Country,"<br>",input$picker_bar,":", get(input$picker_bar)), data_id = temp_df$Country,
                               fill = get(input$color))) +
@@ -189,15 +197,21 @@ function(input, output, session) {
       # color_var = plot_df$Country
     }
     
-    p <- ggplot(plot_df, aes(get(input$picker_x), get(input$picker_y), color = get(input$color))) +
+    p <- ggplot(plot_df, aes(get(input$picker_x), get(input$picker_y), color = get(input$color), 
+                             text = paste(input$picker_x, ": ", get(input$picker_x), "<br>",
+                                          input$picker_y, ": ", get(input$picker_y), "<br>",
+                                          str_to_title(input$color), ": ", get(input$color), "<br>",
+                                          input$size, ": ", get(input$size), "<br>",
+                                          "Year: ", Year, "<br>",
+                                          "Country: ", Country))) +
       geom_point(aes(size = get(input$size), frame = Year, ids = Country)) + 
       xlab(input$picker_x) + ylab(input$picker_y) + labs(color="",size="")
     
     if (input$logx){
-      p <- p + scale_x_continuous(trans='log10')
+      p <- p + scale_x_continuous(trans='log')
     }
 
-    fig <- ggplotly(p) %>%
+    fig <- ggplotly(p, tooltip="text") %>%
       animation_opts(frame = 2000, transition = 1500
       )
 
