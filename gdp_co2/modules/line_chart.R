@@ -6,7 +6,7 @@ tagList(
     pickerInput(
       inputId = "picker",
       label = "Variable",
-      choices = sort(names(df[, !(names(df) %in% drops)])),
+      choices = valid_vars,
       options = pickerOptions(container = "body", liveSearch = TRUE),
       width = "100%",
       selected = "GDP per CO2"
@@ -25,6 +25,7 @@ tagList(
     width = 4
   ),
   box(
+    # Country selection inputs grouped by continent and searchable list
     layout_columns(
       layout_columns(
         virtualSelectInput(
@@ -60,7 +61,7 @@ tagList(
         pickerInput(
           inputId = "picker2",
           label = "Growth Filter Variable",
-          choices = sort(names(df[, !(names(df) %in% drops)])),
+          choices = valid_vars,
           options = pickerOptions(container = "body", liveSearch = TRUE),
           width = "100%",
           selected = "GDP per CO2"

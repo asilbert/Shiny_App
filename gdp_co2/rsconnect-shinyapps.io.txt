@@ -1,0 +1,9 @@
+This app is ready for deployment to shinyapps.io.
+
+To deploy, run:
+
+  rsconnect::deployApp('path/to/app')
+
+Make sure you have logged in with:
+
+  rsconnect::setAccountInfo(name='yourname', token='yourtoken', secret='yoursecret')

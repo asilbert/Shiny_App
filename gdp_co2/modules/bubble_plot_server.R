@@ -6,6 +6,7 @@ library(patchwork)
 bubble_plot_server <- function(input, output, session, df, drops) {
   output$girafe_output_bubble <- renderGirafe({
     
+    # Calculate slope models for growth filtering
     models <- df %>% select(Country, Year, input$picker_bar) %>% drop_na() %>%
       group_by(Country) %>%
       do(model = lm(get(input$picker_bar) ~ Year, data = .)) %>%
@@ -30,6 +31,7 @@ bubble_plot_server <- function(input, output, session, df, drops) {
     
     plot_df <- if (is.null(input$check_bubble)) df_grouped else df_grouped %>% filter(Country %in% country_list)
     
+    # Bubble Plot
     p1 <- ggplot(plot_df, aes(get(input$picker_x), get(input$picker_y),
                               tooltip = paste("Country:", Country, "<br>", input$picker_bar, ":", get(input$picker_bar)),
                               data_id = Country,
@@ -43,6 +45,7 @@ bubble_plot_server <- function(input, output, session, df, drops) {
       p1 <- p1 + scale_x_continuous(trans = 'log')
     }
     
+    # Bar Chart
     temp_df <- head(plot_df %>% arrange(desc(get(input$picker_bar))), 15)
     
     if (input$invert) {
@@ -106,6 +109,6 @@ bubble_plot_server <- function(input, output, session, df, drops) {
     }
     
     ggplotly(p, tooltip = "text") %>%
-      animation_opts(frame = 2000, transition = 1500)
+      animation_opts(frame = 2000, transition = 2000)
   })
 }

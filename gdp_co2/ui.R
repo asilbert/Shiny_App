@@ -6,6 +6,7 @@ library(dplyr)
 library(ggiraph)
 library(bslib)
 
+# UI Definition for the Sustainable Growth Dashboard app
 ui <- dashboardPage(
   
   dashboardHeader(title = "Sustainable Growth"),
@@ -20,14 +21,18 @@ ui <- dashboardPage(
   
   dashboardBody(
     shinyDashboardThemes(theme = "blue_gradient"),
+    # Custom CSS for subtle box shadows and rounded corners for UI polish
     tags$head(
-      tags$style(HTML(".box { box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 12px; }"))
+      tags$style(HTML(".box { box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+                      border-radius: 12px; }"))
     ),
     
     tabItems(
+      # Dashboard overview tab content
       tabItem(tabName = "dashboard",
               fluidRow(
-                box(title = "🌍 Project Overview", width = 12, status = "primary", solidHeader = TRUE,
+                box(title = "🌍 Project Overview", width = 12, status = "primary", 
+                    solidHeader = TRUE,
                     h4("Reducing Emissions Without Sacrificing Growth")
                 )
               ),
@@ -53,6 +58,7 @@ ui <- dashboardPage(
               )
       ),
       
+      # Charts tab loads modular UI dynamically to improve initial loading speed
       tabItem(tabName = "charts",
               tabsetPanel(
                 tabPanel("Line Chart", source("modules/line_chart.R", local = TRUE)$value),
@@ -60,6 +66,7 @@ ui <- dashboardPage(
               )
       ),
       
+      # Tables tab: lets users filter, select columns, and summarize data
       tabItem(tabName = "tables",
               tabsetPanel(
                 tabPanel("Table",
@@ -71,7 +78,7 @@ ui <- dashboardPage(
                            )
                          ),
                          fluidRow(
-                           column(4, selectInput("ent", "Country:", c("All", unique(as.character(df$Country))))),
+                           column(4, selectInput("ent", "Country:", c("All", unique(as.character(df$Country))), multiple = TRUE)),
                            column(4, selectInput("continent", "Continent:", c("All", unique(as.character(df$continent))))),
                            column(4, selectInput("region", "Region:", c("All", unique(as.character(df$region)))))
                          ),

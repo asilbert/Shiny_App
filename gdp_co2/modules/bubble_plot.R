@@ -6,7 +6,7 @@ tagList(
     pickerInput(
       inputId = "picker_x",
       label = "X - Variable",
-      choices = sort(names(df[, !(names(df) %in% drops)])),
+      choices = valid_vars,
       options = pickerOptions(container = "body", liveSearch = TRUE),
       width = "100%",
       selected = "CO2 Growth"
@@ -14,7 +14,7 @@ tagList(
     pickerInput(
       inputId = "picker_y",
       label = "Y - Variable",
-      choices = sort(names(df[, !(names(df) %in% drops)])),
+      choices = valid_vars,
       options = pickerOptions(container = "body", liveSearch = TRUE),
       width = "100%",
       selected = "GDP Growth"
@@ -22,7 +22,7 @@ tagList(
     pickerInput(
       inputId = "picker_bar",
       label = "Bar - Variable",
-      choices = sort(names(df[, !(names(df) %in% drops)])),
+      choices = valid_vars,
       options = pickerOptions(container = "body", liveSearch = TRUE),
       width = "100%",
       selected = "GDP per CO2"
@@ -42,7 +42,7 @@ tagList(
       ),
       numericInput("num_bubble", "Number for Filter", value = 5),
       selectInput("color", "Color", choices = drops, selected = "continent"),
-      selectInput("size", "Size", choices = names(df %>% select(-c(Country, Year))), selected = "Density (P/Km2)"),
+      selectInput("size", "Size", choices = names(df %>% select(-c(Country, Year, continent, region, Latitude, Longitude))), selected = "Population"),
       col_widths = c(1, 1, 1)
     ),
     checkboxInput("logx", "Log Scale X-Axis", FALSE),
