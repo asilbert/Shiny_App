@@ -33,12 +33,12 @@ df <- df %>%
 
 # Calculate CO2 per capita adjusted by population density and land area
 df <- df %>%
-  mutate(`CO2 per capita` = `CO2 Emissions (KT) x1000` * 1000000 /
+  mutate(`CO2 Per Capita` = `CO2 Emissions (KT) x1000` * 1000000 /
            (`Density (P/Km2)` * `Land Area(Km2)`))
 
 # Calculate GDP per CO2 metric for economic efficiency relative to emissions
 df <- df %>%
-  mutate(`GDP per CO2` = `GDP Per Capita` / (`CO2 per capita` * 1000))
+  mutate(`GDP per CO2` = `GDP Per Capita` / (`CO2 Per Capita` * 1000))
 
 # Calculate year-over-year CO2 emissions growth (%) per country
 co2_pct_change_df <- df %>%
